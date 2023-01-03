@@ -5,13 +5,22 @@ import { prisma } from "~/db.server";
 
 export type { League } from "@prisma/client";
 
-export function getLeague({
+export async function getLeague({
   id,
   userId,
-}: Pick<League, "id"> & {
-  userId: User["id"];
-}) {
-  return prisma.league.findFirst({
+}: Pick<League, "id"> & { userId: User["id"] }) {
+  const userOnLeague = await prisma.usersOnLeagues.findFirst({
+    where: {
+      leagueId: id,
+      userId,
+    },
+  });
+
+  if (!userOnLeague) {
+    return null;
+  }
+
+  return prisma.league.findUnique({
     select: {
       id: true,
       name: true,
@@ -19,7 +28,7 @@ export function getLeague({
       hash: true,
       users: { select: { user: true } },
     },
-    where: { id, userId },
+    where: { id },
   });
 }
 
@@ -88,12 +97,14 @@ export async function joinLeague({
     return existingRecord;
   }
 
-  return prisma.usersOnLeagues.create({
+  const userOnLeague = await prisma.usersOnLeagues.create({
     data: {
       leagueId: league.id,
       userId,
     },
   });
+
+  return userOnLeague;
 }
 
 export async function verifyLeaguePassword(
