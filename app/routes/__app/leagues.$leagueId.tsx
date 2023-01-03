@@ -18,7 +18,7 @@ import {
 
 import { requireUserId } from "~/session.server";
 
-const tabs = [
+let tabs = [
   { name: "Leaderboard", href: "details" },
   { name: "Your Picks", href: "entries" },
   { name: "Members", href: "members" },
@@ -32,7 +32,12 @@ export async function loader({ request, params }: LoaderArgs) {
   if (!league) {
     throw new Response("Not Found", { status: 404 });
   }
-  return json({ league, userId });
+
+  if (league.userId === userId) {
+    tabs.push({ name: "Admin", href: "admin" });
+  }
+
+  return json({ league, userId, tabs });
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -112,7 +117,7 @@ export default function LeagueDetailsPage() {
                 name="tabs"
                 className="block w-full py-2 pl-3 pr-10 mt-4 text-base border-gray-300 rounded-md focus:border-purple-500 focus:outline-none focus:ring-purple-500 sm:text-sm"
               >
-                {tabs.map((tab) => (
+                {data.tabs.map((tab) => (
                   <option key={tab.name}>{tab.name}</option>
                 ))}
               </select>
@@ -120,7 +125,7 @@ export default function LeagueDetailsPage() {
             <div className="hidden sm:block">
               <div className="border-b border-gray-200">
                 <nav className="flex mt-2 -mb-px space-x-8" aria-label="Tabs">
-                  {tabs.map((tab) => (
+                  {data.tabs.map((tab) => (
                     <NavLink
                       key={tab.name}
                       to={tab.href}
