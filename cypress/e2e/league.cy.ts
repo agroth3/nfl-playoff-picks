@@ -1,4 +1,6 @@
 import { faker } from "@faker-js/faker";
+import { prisma } from "~/db.server";
+import bcrypt from "bcryptjs";
 
 describe("leagues", () => {
   beforeEach(() => {

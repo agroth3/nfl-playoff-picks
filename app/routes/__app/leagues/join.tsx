@@ -9,6 +9,11 @@ import {
 } from "~/models/league.server";
 import classNames from "classnames";
 
+export const loader = () => {
+  console.log("join");
+  return json({});
+};
+
 export async function action({ request }: ActionArgs) {
   const userId = await requireUserId(request);
 
