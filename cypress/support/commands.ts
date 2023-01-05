@@ -43,13 +43,17 @@ declare global {
 }
 
 function login({
+  firstName = faker.name.firstName(),
+  lastName = faker.name.lastName(),
   email = faker.internet.email(undefined, undefined, "example.com"),
 }: {
+  firstName?: string;
+  lastName?: string;
   email?: string;
 } = {}) {
   cy.then(() => ({ email })).as("user");
   cy.exec(
-    `npx ts-node --require tsconfig-paths/register ./cypress/support/create-user.ts "${email}"`
+    `npx ts-node --require tsconfig-paths/register ./cypress/support/create-user.ts "${firstName}" "${lastName}" "${email}"`
   ).then(({ stdout }) => {
     const cookieValue = stdout
       .replace(/.*<cookie>(?<cookieValue>.*)<\/cookie>.*/s, "$<cookieValue>")

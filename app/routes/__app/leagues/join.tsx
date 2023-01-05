@@ -1,17 +1,36 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import { Form, useActionData } from "@remix-run/react";
-import { ActionArgs, json, redirect } from "@remix-run/server-runtime";
+import { Form, useActionData, useCatch, useLoaderData } from "@remix-run/react";
+import {
+  ActionArgs,
+  json,
+  LoaderArgs,
+  redirect,
+} from "@remix-run/server-runtime";
 import { requireUserId } from "~/session.server";
 import {
-  createLeague,
+  getLeagueByHash,
   joinLeague,
+  League,
   verifyLeaguePassword,
 } from "~/models/league.server";
 import classNames from "classnames";
 
-export const loader = () => {
-  console.log("join");
-  return json({});
+export const loader = async ({ request }: LoaderArgs) => {
+  await requireUserId(request);
+  const url = new URL(request.url);
+  const searchParams = new URLSearchParams(url.searchParams);
+  const hash = searchParams.get("lid");
+
+  let league: League | null = null;
+  if (hash) {
+    league = await getLeagueByHash({ hash });
+  }
+
+  if (hash && !league) {
+    return redirect("/leagues/join");
+  }
+
+  return json({ league });
 };
 
 export async function action({ request }: ActionArgs) {
@@ -72,49 +91,56 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function JoinLeaguePage() {
+  const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
   return (
     <Form method="post" className="max-w-lg mx-auto">
       <h3 className="text-lg font-medium leading-6 text-gray-900">
-        Join league
+        {data?.league
+          ? `Enter password for ${data.league.name}`
+          : "Join league"}
       </h3>
-      <div className="mt-4">
-        <label
-          htmlFor="hash"
-          className="block text-sm font-medium text-gray-700"
-        >
-          League ID
-        </label>
-        <div className="relative mt-1 rounded-md shadow-sm">
-          <input
-            type="text"
-            name="hash"
-            id="hash"
-            className={classNames(
-              "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm",
-              {
-                "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
-                  actionData?.errors?.hash,
-              }
+      {data.league ? (
+        <input type="hidden" name="hash" value={data.league.hash} />
+      ) : (
+        <div className="mt-4">
+          <label
+            htmlFor="hash"
+            className="block text-sm font-medium text-gray-700"
+          >
+            League ID
+          </label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <input
+              type="text"
+              name="hash"
+              id="hash"
+              className={classNames(
+                "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm",
+                {
+                  "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
+                    actionData?.errors?.hash,
+                }
+              )}
+              aria-describedby="id-error"
+            />
+            {actionData?.errors?.hash && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <ExclamationCircleIcon
+                  className="w-5 h-5 text-red-500"
+                  aria-hidden="true"
+                />
+              </div>
             )}
-            aria-describedby="id-error"
-          />
-          {actionData?.errors?.hash && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <ExclamationCircleIcon
-                className="w-5 h-5 text-red-500"
-                aria-hidden="true"
-              />
-            </div>
+          </div>
+          {actionData?.errors.hash && (
+            <p className="mt-2 text-sm text-red-600" id="name-error">
+              {actionData?.errors?.hash}
+            </p>
           )}
         </div>
-        {actionData?.errors.hash && (
-          <p className="mt-2 text-sm text-red-600" id="name-error">
-            {actionData?.errors?.hash}
-          </p>
-        )}
-      </div>
+      )}
       <div className="mt-4">
         <label
           htmlFor="password"
@@ -165,4 +191,24 @@ export default function JoinLeaguePage() {
       </div>
     </Form>
   );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error);
+
+  return <div>An unexpected error occurred: {error.message}</div>;
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+
+  if (caught.status === 404) {
+    return (
+      <div className="mt-8 text-center">
+        <h3 className="text-xl">League not found</h3>
+      </div>
+    );
+  }
+
+  throw new Error(`Unexpected caught response with status: ${caught.status}`);
 }

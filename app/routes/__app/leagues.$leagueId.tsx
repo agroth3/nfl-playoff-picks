@@ -1,6 +1,7 @@
-import { PencilIcon } from "@heroicons/react/24/solid";
+import { ClipboardDocumentIcon, PencilIcon } from "@heroicons/react/24/solid";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
   NavLink,
   Outlet,
@@ -27,6 +28,8 @@ let tabs = [
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request);
   invariant(params.leagueId, "leagueId not found");
+  const url = new URL(request.url);
+  const baseUrl = url.host;
 
   const league = await getLeague({ id: Number(params.leagueId), userId });
   if (!league) {
@@ -37,7 +40,7 @@ export async function loader({ request, params }: LoaderArgs) {
     tabs.push({ name: "Admin", href: "admin" });
   }
 
-  return json({ league, userId, tabs });
+  return json({ league, userId, tabs, baseUrl });
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -82,7 +85,17 @@ export default function LeagueDetailsPage() {
             <h1 className="mt-2 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
               {data.league.name}
             </h1>
-            <h2>{data.league.hash}</h2>
+
+            <button className="mt-2 inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+              <CopyToClipboard
+                text={`${data.baseUrl}/leagues/join?lid=${data.league.hash}`}
+              >
+                <span className="flex gap-2">
+                  <ClipboardDocumentIcon className="w-4 h-4" />
+                  Copy league join link
+                </span>
+              </CopyToClipboard>
+            </button>
           </div>
         </div>
       </header>

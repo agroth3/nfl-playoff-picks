@@ -174,3 +174,11 @@ export async function updateLeague({
     },
   });
 }
+
+export async function getLeagueByHash({ hash }: Pick<League, "hash">) {
+  return prisma.league.findFirst({
+    where: {
+      hash,
+    },
+  });
+}
