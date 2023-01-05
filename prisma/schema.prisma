@@ -55,6 +55,7 @@ model League {
   userId String
 
   users UsersOnLeagues[]
+  teams Team[]
 }
 
 model UsersOnLeagues {
@@ -63,5 +64,23 @@ model UsersOnLeagues {
   user     User   @relation(fields: [userId], references: [id])
   userId   String
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@id([leagueId, userId])
+}
+
+model Team {
+  id           Int    @id @default(autoincrement())
+  name         String
+  abbreviation String
+  rank         Int
+  conference   String
+  wins         Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  league   League @relation(fields: [leagueId], references: [id])
+  leagueId Int
 }

@@ -26,6 +26,8 @@ export async function getLeague({
       name: true,
       userId: true,
       hash: true,
+      isLocked: true,
+      isArchived: true,
       users: { select: { user: true } },
     },
     where: { id },
@@ -153,6 +155,22 @@ export async function deleteLeagueUser({
         userId,
         leagueId,
       },
+    },
+  });
+}
+
+export async function updateLeague({
+  id,
+  isArchived,
+  isLocked,
+}: Pick<League, "id" | "isArchived" | "isLocked">) {
+  return prisma.league.update({
+    data: {
+      isArchived,
+      isLocked,
+    },
+    where: {
+      id,
     },
   });
 }

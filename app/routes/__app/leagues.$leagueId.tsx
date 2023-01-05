@@ -84,22 +84,6 @@ export default function LeagueDetailsPage() {
             </h1>
             <h2>{data.league.hash}</h2>
           </div>
-          <div className="flex mt-5 xl:mt-0 xl:ml-4">
-            {data.league.userId === data.userId && (
-              <span className="hidden sm:block">
-                <button
-                  type="button"
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                >
-                  <PencilIcon
-                    className="w-5 h-5 mr-2 -ml-1 text-gray-400"
-                    aria-hidden="true"
-                  />
-                  Admin
-                </button>
-              </span>
-            )}
-          </div>
         </div>
       </header>
 
@@ -145,7 +129,9 @@ export default function LeagueDetailsPage() {
               </div>
             </div>
           </div>
-          <Outlet />
+          <div className="p-4">
+            <Outlet />
+          </div>
         </div>
       </main>
     </>
