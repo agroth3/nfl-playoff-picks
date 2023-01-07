@@ -15,6 +15,10 @@ import {
 } from "~/models/team.server";
 import { requireUserId } from "~/session.server";
 
+export const handle = {
+  breadcrumb: () => "Admin",
+};
+
 export const loader = async ({ request, params }: LoaderArgs) => {
   const userId = await requireUserId(request);
   invariant(params.leagueId, "leagueId not found");
@@ -334,8 +338,8 @@ export default function LeagueAdminPage() {
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-12 col-span-8 gap-4 p-4 bg-gray-100 rounded-lg">
-            <div className="col-span-6">
+          <div className="grid grid-cols-12 col-span-8 gap-4 p-4 mt-4 bg-gray-100 rounded-lg md:mt-0">
+            <div className="col-span-12 md:col-span-6">
               <h3 className="text-lg font-medium leading-6 text-gray-900">
                 AFC
               </h3>
@@ -355,7 +359,7 @@ export default function LeagueAdminPage() {
                 ))}
               </ul>
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 mt-4 md:col-span-6 md:mt-0">
               <h3 className="text-lg font-medium leading-6 text-gray-900">
                 NFC
               </h3>

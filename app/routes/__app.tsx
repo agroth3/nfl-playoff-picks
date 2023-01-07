@@ -1,54 +1,39 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { XMarkIcon, Bars3Icon, BellIcon } from "@heroicons/react/24/solid";
-import { NavLink, Form, Outlet } from "@remix-run/react";
+import {
+  XMarkIcon,
+  Bars3Icon,
+  BellIcon,
+  UserIcon,
+} from "@heroicons/react/24/solid";
+import { Form, Outlet, useLoaderData } from "@remix-run/react";
+import { json, LoaderArgs } from "@remix-run/server-runtime";
 import classNames from "classnames";
 import { Fragment } from "react";
+import { getUser } from "~/session.server";
 
-const user = {
-  name: "Whitney Francis",
-  email: "whitney.francis@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
 const navigation = [{ name: "Dashboard", href: "/leagues" }];
 const userNavigation = [{ name: "Your Profile", href: "/profile" }];
 
+export const loader = async ({ request }: LoaderArgs) => {
+  const user = await getUser(request);
+
+  return json({ user });
+};
+
 export default function AppPage() {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <>
       {/* Navbar */}
-      <Disclosure as="nav" className="bg-gray-50">
+      <Disclosure as="nav" className="bg-black ">
         {({ open }) => (
           <>
             <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
               <div className="relative flex items-center justify-between h-16">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <img
-                      className="w-auto h-8"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=violet&shade=500"
-                      alt="Your Company"
-                    />
-                  </div>
-
-                  {/* Links section */}
-                  <div className="hidden lg:ml-10 lg:block">
-                    <div className="flex space-x-4">
-                      {navigation.map((item) => (
-                        <NavLink
-                          key={item.name}
-                          to={item.href}
-                          className={({ isActive }) =>
-                            classNames(
-                              isActive ? "" : "hover:text-gray-700",
-                              "rounded-md px-3 py-2 text-sm font-medium text-gray-900"
-                            )
-                          }
-                        >
-                          {item.name}
-                        </NavLink>
-                      ))}
-                    </div>
+                  <div className="flex-shrink-0 font-bold text-white">
+                    NFL Pickems
                   </div>
                 </div>
 
@@ -67,24 +52,15 @@ export default function AppPage() {
                 {/* Actions section */}
                 <div className="hidden lg:ml-4 lg:block">
                   <div className="flex items-center">
-                    <button
-                      type="button"
-                      className="flex-shrink-0 p-1 text-gray-400 rounded-full bg-gray-50 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                    >
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon className="w-6 h-6" aria-hidden="true" />
-                    </button>
-
                     {/* Profile dropdown */}
                     <Menu as="div" className="relative flex-shrink-0 ml-3">
                       <div>
-                        <Menu.Button className="flex text-sm text-white rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50">
+                        <Menu.Button className="flex text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50">
                           <span className="sr-only">Open user menu</span>
-                          <img
-                            className="w-8 h-8 rounded-full"
-                            src={user.imageUrl}
-                            alt=""
-                          />
+                          <span className="flex items-center gap-2">
+                            <UserIcon className="w-4 h-4" />
+                            Account
+                          </span>
                         </Menu.Button>
                       </div>
                       <Transition
@@ -152,28 +128,14 @@ export default function AppPage() {
               </div>
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex items-center px-5">
-                  <div className="flex-shrink-0">
-                    <img
-                      className="w-10 h-10 rounded-full"
-                      src={user.imageUrl}
-                      alt=""
-                    />
-                  </div>
-                  <div className="ml-3">
+                  <div>
                     <div className="text-base font-medium text-gray-800">
-                      {user.name}
+                      {data.user?.firstName}
                     </div>
                     <div className="text-sm font-medium text-gray-500">
-                      {user.email}
+                      {data.user?.email}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    className="flex-shrink-0 p-1 ml-auto text-gray-400 rounded-full bg-gray-50 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                  >
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="w-6 h-6" aria-hidden="true" />
-                  </button>
                 </div>
                 <div className="px-2 mt-3 space-y-1">
                   {userNavigation.map((item) => (
@@ -192,7 +154,6 @@ export default function AppPage() {
           </>
         )}
       </Disclosure>
-
       <Outlet />
     </>
   );

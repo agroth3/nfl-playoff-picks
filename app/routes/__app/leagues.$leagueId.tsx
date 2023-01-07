@@ -1,13 +1,19 @@
-import { ClipboardDocumentIcon, PencilIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronRightIcon,
+  ClipboardDocumentIcon,
+} from "@heroicons/react/24/solid";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
+  Link,
   NavLink,
   Outlet,
   useCatch,
-  useFetcher,
   useLoaderData,
+  useLocation,
+  useMatches,
+  useNavigate,
 } from "@remix-run/react";
 import classNames from "classnames";
 import invariant from "tiny-invariant";
@@ -74,10 +80,56 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function LeagueDetailsPage() {
   const data = useLoaderData<typeof loader>();
-  const fetcher = useFetcher();
+  const matches = useMatches();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <>
+      <nav className="relative hidden shadow-md bg-violet-600 bg-gradient-to-br from-violet-600 to-indigo-600 shadow-violet-900/5 md:flex">
+        <ol className="flex items-center w-full h-16 px-4 mx-auto space-x-1 overflow-x-auto font-medium text-white max-w-7xl sm:px-8 ">
+          <li>
+            <Link
+              to="/leagues"
+              className=" -ml-2 flex items-center rounded-lg bg-transparent py-1.5 pl-2 pr-3 hover:bg-violet-700/50 focus:bg-violet-700/50"
+            >
+              <svg
+                role="img"
+                className="w-4 h-auto mr-2 pointer-events-none"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <g bufferred-rendering="static">
+                  <path
+                    d="M17.5 13a1.947 1.947 0 00-1.928-1.928H13A1.946 1.946 0 0011.072 13v2.572A1.947 1.947 0 0013 17.5h2.572a1.949 1.949 0 001.928-1.928V13z"
+                    fillOpacity=".5"
+                  ></path>
+                  <path d="M8.928 13A1.946 1.946 0 007 11.072H4.428A1.947 1.947 0 002.5 13v2.572A1.949 1.949 0 004.428 17.5H7a1.947 1.947 0 001.928-1.928V13zM17.5 4.428A1.949 1.949 0 0015.572 2.5H13a1.947 1.947 0 00-1.928 1.928V7A1.946 1.946 0 0013 8.928h2.572A1.947 1.947 0 0017.5 7V4.428zm-8.572 0A1.947 1.947 0 007 2.5H4.428A1.949 1.949 0 002.5 4.428V7a1.947 1.947 0 001.928 1.928H7A1.946 1.946 0 008.928 7V4.428z"></path>
+                </g>
+              </svg>
+              Dashboard
+            </Link>
+          </li>
+          <li className="flex items-center">
+            <ChevronRightIcon className="w-5 h-5 mr-1 opacity-50" />
+            <span className="cursor-default px-3 py-1.5">
+              {data.league.name}
+            </span>
+          </li>
+          {matches
+            // skip routes that don't have a breadcrumb
+            .filter((match) => match.handle && match.handle.breadcrumb)
+            // render breadcrumbs!
+            .map((match, index) => (
+              <li className="flex items-center" key={index}>
+                <ChevronRightIcon className="w-5 h-5 mr-1 opacity-50" />
+                <span className="cursor-default px-3 py-1.5">
+                  {match.handle?.breadcrumb(match)}
+                </span>
+              </li>
+            ))}
+        </ol>
+      </nav>
       {/* Page heading */}
       <header className="py-8 bg-gray-50">
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 xl:flex xl:items-center xl:justify-between">
@@ -113,9 +165,15 @@ export default function LeagueDetailsPage() {
                 id="tabs"
                 name="tabs"
                 className="block w-full py-2 pl-3 pr-10 mt-4 text-base border-gray-300 rounded-md focus:border-purple-500 focus:outline-none focus:ring-purple-500 sm:text-sm"
+                onChange={(e) => navigate(e.target.value)}
+                value={
+                  tabs.find((t) => location.pathname.includes(t.href))?.href
+                }
               >
                 {data.tabs.map((tab) => (
-                  <option key={tab.name}>{tab.name}</option>
+                  <option key={tab.href} value={tab.href}>
+                    {tab.name}
+                  </option>
                 ))}
               </select>
             </div>

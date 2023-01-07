@@ -95,101 +95,103 @@ export default function JoinLeaguePage() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <Form method="post" className="max-w-lg mx-auto">
-      <h3 className="text-lg font-medium leading-6 text-gray-900">
-        {data?.league
-          ? `Enter password for ${data.league.name}`
-          : "Join league"}
-      </h3>
-      {data.league ? (
-        <input type="hidden" name="hash" value={data.league.hash} />
-      ) : (
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <Form method="post" className="mx-auto mt-4 max-w-lg">
+        <h3 className="text-lg font-medium leading-6 text-gray-900">
+          {data?.league
+            ? `Enter password for ${data.league.name}`
+            : "Join league"}
+        </h3>
+        {data.league ? (
+          <input type="hidden" name="hash" value={data.league.hash} />
+        ) : (
+          <div className="mt-4">
+            <label
+              htmlFor="hash"
+              className="block text-sm font-medium text-gray-700"
+            >
+              League ID
+            </label>
+            <div className="relative mt-1 rounded-md shadow-sm">
+              <input
+                type="text"
+                name="hash"
+                id="hash"
+                className={classNames(
+                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm",
+                  {
+                    "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
+                      actionData?.errors?.hash,
+                  }
+                )}
+                aria-describedby="id-error"
+              />
+              {actionData?.errors?.hash && (
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  <ExclamationCircleIcon
+                    className="h-5 w-5 text-red-500"
+                    aria-hidden="true"
+                  />
+                </div>
+              )}
+            </div>
+            {actionData?.errors.hash && (
+              <p className="mt-2 text-sm text-red-600" id="name-error">
+                {actionData?.errors?.hash}
+              </p>
+            )}
+          </div>
+        )}
         <div className="mt-4">
           <label
-            htmlFor="hash"
+            htmlFor="password"
             className="block text-sm font-medium text-gray-700"
           >
-            League ID
+            Password
           </label>
           <div className="relative mt-1 rounded-md shadow-sm">
             <input
               type="text"
-              name="hash"
-              id="hash"
+              name="password"
+              id="password"
               className={classNames(
                 "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm",
                 {
                   "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
-                    actionData?.errors?.hash,
+                    actionData?.errors?.password,
                 }
               )}
-              aria-describedby="id-error"
+              aria-describedby="password-error"
             />
-            {actionData?.errors?.hash && (
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            {actionData?.errors?.password && (
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                 <ExclamationCircleIcon
-                  className="w-5 h-5 text-red-500"
+                  className="h-5 w-5 text-red-500"
                   aria-hidden="true"
                 />
               </div>
             )}
           </div>
-          {actionData?.errors.hash && (
-            <p className="mt-2 text-sm text-red-600" id="name-error">
-              {actionData?.errors?.hash}
+          <p className="mt-2 text-sm text-gray-500" id="password-description">
+            Minimum of 8 characters
+          </p>
+          {actionData?.errors.password && (
+            <p className="mt-2 text-sm text-red-600" id="password-error">
+              {actionData?.errors?.password}
             </p>
           )}
         </div>
-      )}
-      <div className="mt-4">
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Password
-        </label>
-        <div className="relative mt-1 rounded-md shadow-sm">
-          <input
-            type="text"
-            name="password"
-            id="password"
-            className={classNames(
-              "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm",
-              {
-                "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
-                  actionData?.errors?.password,
-              }
-            )}
-            aria-describedby="password-error"
-          />
-          {actionData?.errors?.password && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <ExclamationCircleIcon
-                className="w-5 h-5 text-red-500"
-                aria-hidden="true"
-              />
-            </div>
-          )}
-        </div>
-        <p className="mt-2 text-sm text-gray-500" id="password-description">
-          Minimum of 8 characters
-        </p>
-        {actionData?.errors.password && (
-          <p className="mt-2 text-sm text-red-600" id="password-error">
-            {actionData?.errors?.password}
-          </p>
-        )}
-      </div>
 
-      <div className="mt-4 text-right">
-        <button
-          type="submit"
-          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:bg-blue-400"
-        >
-          Save
-        </button>
-      </div>
-    </Form>
+        <div className="mt-4 text-right">
+          <button
+            type="submit"
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+          >
+            Save
+          </button>
+        </div>
+      </Form>
+    </main>
   );
 }
 

@@ -36,7 +36,9 @@ export async function getLeague({
 
 export async function getLeagueListItems({ userId }: { userId: User["id"] }) {
   return prisma.usersOnLeagues.findMany({
-    select: { league: true },
+    select: {
+      league: { select: { name: true, id: true, users: true, user: true } },
+    },
     where: {
       userId,
     },
@@ -179,6 +181,15 @@ export async function getLeagueByHash({ hash }: Pick<League, "hash">) {
   return prisma.league.findFirst({
     where: {
       hash,
+    },
+  });
+}
+
+export async function getLeagueMembers({ id }: Pick<League, "id">) {
+  return prisma.usersOnLeagues.findMany({
+    select: { user: true },
+    where: {
+      leagueId: id,
     },
   });
 }
