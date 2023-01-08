@@ -42,11 +42,7 @@ export async function loader({ request, params }: LoaderArgs) {
     throw new Response("Not Found", { status: 404 });
   }
 
-  if (league.userId === userId) {
-    tabs.push({ name: "Admin", href: "admin" });
-  }
-
-  return json({ league, userId, tabs, baseUrl });
+  return json({ league, userId, baseUrl });
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -170,7 +166,7 @@ export default function LeagueDetailsPage() {
                   tabs.find((t) => location.pathname.includes(t.href))?.href
                 }
               >
-                {data.tabs.map((tab) => (
+                {tabs.map((tab) => (
                   <option key={tab.href} value={tab.href}>
                     {tab.name}
                   </option>
@@ -180,7 +176,7 @@ export default function LeagueDetailsPage() {
             <div className="hidden sm:block">
               <div className="border-b border-gray-200">
                 <nav className="flex mt-2 -mb-px space-x-8" aria-label="Tabs">
-                  {data.tabs.map((tab) => (
+                  {tabs.map((tab) => (
                     <NavLink
                       key={tab.name}
                       to={tab.href}
@@ -196,6 +192,21 @@ export default function LeagueDetailsPage() {
                       {tab.name}
                     </NavLink>
                   ))}
+                  {data.userId === data.league.userId && (
+                    <NavLink
+                      to="admin"
+                      className={({ isActive }) =>
+                        classNames(
+                          isActive
+                            ? "border-purple-500 text-purple-600"
+                            : "border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700",
+                          "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
+                        )
+                      }
+                    >
+                      Admin
+                    </NavLink>
+                  )}
                 </nav>
               </div>
             </div>
