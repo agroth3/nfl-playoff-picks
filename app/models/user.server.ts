@@ -1,4 +1,4 @@
-import type { Password, User } from "@prisma/client";
+import type { League, Password, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
@@ -67,3 +67,24 @@ export async function verifyLogin(
 
   return userWithoutPassword;
 }
+
+export const deleteUser = async ({
+  id,
+  leagueId,
+}: {
+  id: User["id"];
+  leagueId: League["id"];
+}) => {
+  await prisma.pick.deleteMany({
+    where: { userId: id },
+  });
+
+  return await prisma.usersOnLeagues.delete({
+    where: {
+      leagueId_userId: {
+        userId: id,
+        leagueId,
+      },
+    },
+  });
+};
