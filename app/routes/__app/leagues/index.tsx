@@ -8,7 +8,11 @@ export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request);
   const leagueListItems = await getLeagueListItems({ userId });
 
-  return json({ leagueListItems });
+  return json({
+    leagueListItems: leagueListItems.filter(
+      (l) => l.league.isArchived === false
+    ),
+  });
 }
 
 export default function LeaguesPage() {

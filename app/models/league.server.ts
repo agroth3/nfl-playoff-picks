@@ -37,7 +37,15 @@ export async function getLeague({
 export async function getLeagueListItems({ userId }: { userId: User["id"] }) {
   return prisma.usersOnLeagues.findMany({
     select: {
-      league: { select: { name: true, id: true, users: true, user: true } },
+      league: {
+        select: {
+          name: true,
+          id: true,
+          users: true,
+          user: true,
+          isArchived: true,
+        },
+      },
     },
     where: {
       userId,

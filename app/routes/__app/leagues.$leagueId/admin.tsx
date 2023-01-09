@@ -1,8 +1,7 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/server-runtime";
 import classNames from "classnames";
-import { tmpdir } from "os";
 import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
 import {
@@ -11,7 +10,7 @@ import {
   inputClasses,
   selectClasses,
 } from "~/components/Inputs";
-import { getLeague, updateLeague } from "~/models/league.server";
+import { League, updateLeague } from "~/models/league.server";
 import {
   createTeam,
   deleteTeam,
@@ -20,6 +19,7 @@ import {
   updateTeam,
 } from "~/models/team.server";
 import { requireUserId } from "~/session.server";
+import { useMatchesData } from "~/utils";
 
 export const handle = {
   breadcrumb: () => "Admin",
@@ -29,10 +29,9 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const userId = await requireUserId(request);
   invariant(params.leagueId, "leagueId not found");
 
-  const league = await getLeague({ id: Number(params.leagueId), userId });
   const teams = await getTeams({ leagueId: Number(params.leagueId) });
 
-  return json({ teams, league });
+  return json({ teams });
 };
 
 export const action = async ({ request, params }: ActionArgs) => {
@@ -154,6 +153,10 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 export default function LeagueAdminPage() {
   const data = useLoaderData<typeof loader>();
+  const { league } = useMatchesData("routes/__app/leagues.$leagueId") as {
+    league: League;
+  };
+
   const createTeamFormRef = useRef<HTMLFormElement | null>(null);
   const [removedTeamIds, setRemovedTeamIds] = useState<number[]>([]);
   const fetcher = useFetcher();
@@ -203,7 +206,7 @@ export default function LeagueAdminPage() {
                   type="checkbox"
                   name="isLocked"
                   id="isLocked"
-                  defaultChecked={data.league?.isLocked}
+                  defaultChecked={league?.isLocked}
                 />
                 <span>Lock league</span>
               </label>
@@ -218,7 +221,7 @@ export default function LeagueAdminPage() {
                   id="isArchived"
                   type="checkbox"
                   name="isArchived"
-                  defaultChecked={data.league?.isArchived}
+                  defaultChecked={league?.isArchived}
                 />
                 <span>Archive league</span>
               </label>
@@ -435,7 +438,6 @@ const TeamListItem = ({
     "name" | "abbreviation" | "conference" | "id" | "rank" | "wins"
   >;
 }) => {
-  console.log("TEAM RANK ", team.rank);
   return (
     <li className="py-4">
       <input type="hidden" name="teamId" value={team.id} />
