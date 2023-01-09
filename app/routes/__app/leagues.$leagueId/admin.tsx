@@ -5,6 +5,12 @@ import classNames from "classnames";
 import { tmpdir } from "os";
 import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
+import {
+  buttonClasses,
+  cardClasses,
+  inputClasses,
+  selectClasses,
+} from "~/components/Inputs";
 import { getLeague, updateLeague } from "~/models/league.server";
 import {
   createTeam,
@@ -183,201 +189,222 @@ export default function LeagueAdminPage() {
         name="removedTeamIds"
         value={JSON.stringify(removedTeamIds)}
       />
-      <div className="mt-8">
-        <div>
-          <label htmlFor="isLocked" className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="isLocked"
-              id="isLocked"
-              defaultChecked={data.league?.isLocked}
-            />
-            <span>Lock league</span>
-          </label>
-          <p className="text-sm text-gray-700">
-            This will display member picks and prevent members from changing
-            their picks
-          </p>
-        </div>
-        <div className="mt-4">
-          <label htmlFor="isArchived" className="flex items-center gap-2">
-            <input
-              id="isArchived"
-              type="checkbox"
-              name="isArchived"
-              defaultChecked={data.league?.isArchived}
-            />
-            <span>Archive league</span>
-          </label>
-          <p className="text-sm text-gray-700">
-            This will prevent the league from showing in list of leagues
-          </p>
-        </div>
-        <div className="grid-cols-12 gap-8 mt-8 md:grid">
-          <div className="col-span-4">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">
-              Create team
-            </h3>
-            <div className="mt-4">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Name
-              </label>
-              <div className="relative mt-1 rounded-md shadow-sm">
+      <div>
+        <div className={cardClasses}>
+          <div className="p-6">
+            <h2 className="text-lg font-medium leading-6 text-navy">
+              League Settings
+            </h2>
+          </div>
+          <div className="p-6 border-t border-gray-200">
+            <div>
+              <label htmlFor="isLocked" className="flex items-center gap-2">
                 <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  className={classNames(
-                    "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm",
-                    {
-                      "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
-                        fetcher.data?.errors?.name,
-                    }
-                  )}
-                  aria-describedby="name-error"
+                  type="checkbox"
+                  name="isLocked"
+                  id="isLocked"
+                  defaultChecked={data.league?.isLocked}
                 />
-                {fetcher.data?.errors?.name && (
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <ExclamationCircleIcon
-                      className="w-5 h-5 text-red-500"
-                      aria-hidden="true"
-                    />
-                  </div>
-                )}
-              </div>
-              {fetcher.data?.errors?.name && (
-                <p className="mt-2 text-sm text-red-600" id="name-error">
-                  {fetcher.data?.errors?.name}
-                </p>
-              )}
+                <span>Lock league</span>
+              </label>
+              <p className="text-sm text-gray-700">
+                This will display member picks and prevent members from changing
+                their picks
+              </p>
             </div>
             <div className="mt-4">
-              <label
-                htmlFor="abbreviation"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Abbreviation
-              </label>
-              <div className="relative mt-1 rounded-md shadow-sm">
+              <label htmlFor="isArchived" className="flex items-center gap-2">
                 <input
-                  type="text"
-                  name="abbreviation"
-                  id="abbreviation"
-                  className={classNames(
-                    "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm",
-                    {
-                      "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
-                        fetcher.data?.errors?.abbreviation,
-                    }
-                  )}
-                  aria-describedby="abbreviation-error"
+                  id="isArchived"
+                  type="checkbox"
+                  name="isArchived"
+                  defaultChecked={data.league?.isArchived}
                 />
-                {fetcher.data?.errors?.abbreviation && (
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <ExclamationCircleIcon
-                      className="w-5 h-5 text-red-500"
-                      aria-hidden="true"
-                    />
-                  </div>
-                )}
-              </div>
-              {fetcher.data?.errors?.abbreviation && (
-                <p
-                  className="mt-2 text-sm text-red-600"
-                  id="abbreviation-error"
-                >
-                  {fetcher.data?.errors?.abbreviation}
-                </p>
-              )}
-            </div>
-
-            <div className="mt-4">
-              <label
-                htmlFor="abbreviation"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Conference
+                <span>Archive league</span>
               </label>
-              <div className="relative mt-1 rounded-md shadow-sm">
-                <select
-                  id="conference"
-                  name="conference"
-                  className="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                >
-                  <option value="">select</option>
-                  <option value="AFC">AFC</option>
-                  <option value="NFC">NFC</option>
-                </select>
-                {fetcher.data?.errors?.conference && (
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <ExclamationCircleIcon
-                      className="w-5 h-5 text-red-500"
-                      aria-hidden="true"
-                    />
-                  </div>
-                )}
-              </div>
-              {fetcher.data?.errors?.conference && (
-                <p className="mt-2 text-sm text-red-600" id="conference-error">
-                  {fetcher.data?.errors?.conference}
-                </p>
-              )}
-            </div>
-
-            <div className="mt-4 text-right">
-              <button
-                type="submit"
-                name="intent"
-                value="add-team"
-                className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:bg-blue-400"
-              >
-                Create
-              </button>
+              <p className="text-sm text-gray-700">
+                This will prevent the league from showing in list of leagues
+              </p>
             </div>
           </div>
-          <div className="grid grid-cols-12 col-span-8 gap-4 p-4 mt-4 bg-gray-100 rounded-lg md:mt-0">
-            <div className="col-span-12 md:col-span-6">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
-                AFC
-              </h3>
-              {afcTeams.length === 0 && (
-                <div className="mt-2">There are no teams yet</div>
-              )}
-              <ul className="mt-2 divide-y divide-gray-500">
-                {afcTeams.map((team) => (
-                  <TeamListItem
-                    onDeleteTeam={() =>
-                      setRemovedTeamIds([...removedTeamIds, team.id])
-                    }
-                    totalTeamsCount={afcTeams.length}
-                    team={team}
-                    key={team.id}
-                  />
-                ))}
-              </ul>
+        </div>
+        <div className="grid-cols-12 gap-8 mt-8 md:grid">
+          <div className={`col-span-4 ${cardClasses}`}>
+            <div className="p-6">
+              <h2 className="text-lg font-medium leading-6 text-navy">
+                Create Team
+              </h2>
             </div>
-            <div className="col-span-12 mt-4 md:col-span-6 md:mt-0">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
-                NFC
-              </h3>
-              {nfcTeams.length === 0 && (
-                <div className="mt-2">There are no teams yet</div>
-              )}
-              <ul className="mt-2 divide-y divide-gray-500">
-                {nfcTeams.map((team) => (
-                  <TeamListItem
-                    onDeleteTeam={() =>
-                      setRemovedTeamIds([...removedTeamIds, team.id])
-                    }
-                    totalTeamsCount={nfcTeams.length}
-                    team={team}
-                    key={team.id}
+            <div className="p-6 border-t border-gray-200">
+              <div className="mt-4">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Name
+                </label>
+                <div className="relative mt-1 rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    className={classNames(inputClasses, "w-full", {
+                      "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
+                        fetcher.data?.errors?.name,
+                    })}
+                    aria-describedby="name-error"
                   />
-                ))}
-              </ul>
+                  {fetcher.data?.errors?.name && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <ExclamationCircleIcon
+                        className="w-5 h-5 text-red-500"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  )}
+                </div>
+                {fetcher.data?.errors?.name && (
+                  <p className="mt-2 text-sm text-red-600" id="name-error">
+                    {fetcher.data?.errors?.name}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  htmlFor="abbreviation"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Abbreviation
+                </label>
+                <div className="relative mt-1 rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="abbreviation"
+                    id="abbreviation"
+                    className={classNames(inputClasses, "w-full", {
+                      "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
+                        fetcher.data?.errors?.abbreviation,
+                    })}
+                    aria-describedby="abbreviation-error"
+                  />
+                  {fetcher.data?.errors?.abbreviation && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <ExclamationCircleIcon
+                        className="w-5 h-5 text-red-500"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  )}
+                </div>
+                {fetcher.data?.errors?.abbreviation && (
+                  <p
+                    className="mt-2 text-sm text-red-600"
+                    id="abbreviation-error"
+                  >
+                    {fetcher.data?.errors?.abbreviation}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <label
+                  htmlFor="abbreviation"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Conference
+                </label>
+                <div className="relative mt-1 rounded-md shadow-sm">
+                  <select
+                    id="conference"
+                    name="conference"
+                    className={selectClasses}
+                  >
+                    <option value="">select</option>
+                    <option value="AFC">AFC</option>
+                    <option value="NFC">NFC</option>
+                  </select>
+                  {fetcher.data?.errors?.conference && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <ExclamationCircleIcon
+                        className="w-5 h-5 text-red-500"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  )}
+                </div>
+                {fetcher.data?.errors?.conference && (
+                  <p
+                    className="mt-2 text-sm text-red-600"
+                    id="conference-error"
+                  >
+                    {fetcher.data?.errors?.conference}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4 text-right">
+                <button
+                  type="submit"
+                  name="intent"
+                  value="add-team"
+                  className={buttonClasses}
+                >
+                  Create
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-12 col-span-8 gap-4 p-4 mt-4 md:mt-0 md:pt-0">
+            <div
+              className={classNames("col-span-12 md:col-span-6", cardClasses)}
+            >
+              <div className="p-6">
+                <h2 className="text-lg font-medium leading-6 text-navy">AFC</h2>
+              </div>
+              <div className="p-6 border-t border-gray-200">
+                {afcTeams.length === 0 && (
+                  <div className="mt-2">There are no teams yet</div>
+                )}
+                <ul className="mt-2 divide-y divide-gray-500">
+                  {afcTeams.map((team) => (
+                    <TeamListItem
+                      onDeleteTeam={() =>
+                        setRemovedTeamIds([...removedTeamIds, team.id])
+                      }
+                      totalTeamsCount={afcTeams.length}
+                      team={team}
+                      key={team.id}
+                    />
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div
+              className={classNames(
+                "col-span-12 mt-4 md:col-span-6 md:mt-0",
+                cardClasses
+              )}
+            >
+              <div className="p-6">
+                <h2 className="text-lg font-medium leading-6 text-navy">NFC</h2>
+              </div>
+              <div className="p-6 border-t border-gray-200">
+                {nfcTeams.length === 0 && (
+                  <div className="mt-2">There are no teams yet</div>
+                )}
+                <ul className="mt-2 divide-y divide-gray-500">
+                  {nfcTeams.map((team) => (
+                    <TeamListItem
+                      onDeleteTeam={() =>
+                        setRemovedTeamIds([...removedTeamIds, team.id])
+                      }
+                      totalTeamsCount={nfcTeams.length}
+                      team={team}
+                      key={team.id}
+                    />
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -387,7 +414,7 @@ export default function LeagueAdminPage() {
           type="submit"
           name="intent"
           value="update-league"
-          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:bg-blue-400"
+          className={buttonClasses}
         >
           {isSaving ? "Updating" : "Update"}
         </button>
@@ -408,6 +435,7 @@ const TeamListItem = ({
     "name" | "abbreviation" | "conference" | "id" | "rank" | "wins"
   >;
 }) => {
+  console.log("TEAM RANK ", team.rank);
   return (
     <li className="py-4">
       <input type="hidden" name="teamId" value={team.id} />
@@ -415,8 +443,8 @@ const TeamListItem = ({
         <select
           name="rank"
           id={`team[${team.id}][rank]`}
-          defaultValue={team.rank}
-          className="block py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          defaultValue={team.rank.toString()}
+          className={selectClasses}
         >
           {Array.from(new Array(totalTeamsCount)).map((i, index) => (
             <option key={index} value={index + 1}>
@@ -425,7 +453,7 @@ const TeamListItem = ({
           ))}
         </select>
         <input
-          className="flex-1 block border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={inputClasses}
           type="text"
           name="teamName"
           defaultValue={team.name}
@@ -449,7 +477,7 @@ const TeamListItem = ({
             type="text"
             name="teamAbbreviation"
             id={`team[${team.id}].abbr`}
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className={inputClasses}
             defaultValue={team.abbreviation}
           />
         </div>
@@ -466,7 +494,7 @@ const TeamListItem = ({
             type="number"
             name="wins"
             id={`team[${team.id}][wins]`}
-            className="block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className={inputClasses}
             defaultValue={team.wins}
           />
         </div>
