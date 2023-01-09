@@ -58,3 +58,15 @@ export async function upsertPick({
     },
   });
 }
+
+export function getLeagueMemberPicks({ leagueId }: { leagueId: League["id"] }) {
+  return prisma.pick.findMany({
+    select: { user: true, points: true, team: true },
+    where: {
+      leagueId,
+    },
+    orderBy: {
+      team: { rank: "asc" },
+    },
+  });
+}

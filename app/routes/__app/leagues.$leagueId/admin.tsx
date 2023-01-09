@@ -232,128 +232,130 @@ export default function LeagueAdminPage() {
           </div>
         </div>
         <div className="grid-cols-12 gap-8 mt-8 md:grid">
-          <div className={`col-span-4 ${cardClasses}`}>
-            <div className="p-6">
-              <h2 className="text-lg font-medium leading-6 text-navy">
-                Create Team
-              </h2>
-            </div>
-            <div className="p-6 border-t border-gray-200">
-              <div className="mt-4">
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Name
-                </label>
-                <div className="relative mt-1 rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    className={classNames(inputClasses, "w-full", {
-                      "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
-                        fetcher.data?.errors?.name,
-                    })}
-                    aria-describedby="name-error"
-                  />
+          <div className="col-span-4">
+            <div className={`${cardClasses}`}>
+              <div className="p-6">
+                <h2 className="text-lg font-medium leading-6 text-navy">
+                  Create Team
+                </h2>
+              </div>
+              <div className="p-6 border-t border-gray-200">
+                <div className="mt-4">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Name
+                  </label>
+                  <div className="relative mt-1 rounded-md shadow-sm">
+                    <input
+                      type="text"
+                      name="name"
+                      id="name"
+                      className={classNames(inputClasses, "w-full", {
+                        "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
+                          fetcher.data?.errors?.name,
+                      })}
+                      aria-describedby="name-error"
+                    />
+                    {fetcher.data?.errors?.name && (
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <ExclamationCircleIcon
+                          className="w-5 h-5 text-red-500"
+                          aria-hidden="true"
+                        />
+                      </div>
+                    )}
+                  </div>
                   {fetcher.data?.errors?.name && (
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <ExclamationCircleIcon
-                        className="w-5 h-5 text-red-500"
-                        aria-hidden="true"
-                      />
-                    </div>
+                    <p className="mt-2 text-sm text-red-600" id="name-error">
+                      {fetcher.data?.errors?.name}
+                    </p>
                   )}
                 </div>
-                {fetcher.data?.errors?.name && (
-                  <p className="mt-2 text-sm text-red-600" id="name-error">
-                    {fetcher.data?.errors?.name}
-                  </p>
-                )}
-              </div>
-              <div className="mt-4">
-                <label
-                  htmlFor="abbreviation"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Abbreviation
-                </label>
-                <div className="relative mt-1 rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="abbreviation"
-                    id="abbreviation"
-                    className={classNames(inputClasses, "w-full", {
-                      "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
-                        fetcher.data?.errors?.abbreviation,
-                    })}
-                    aria-describedby="abbreviation-error"
-                  />
+                <div className="mt-4">
+                  <label
+                    htmlFor="abbreviation"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Abbreviation
+                  </label>
+                  <div className="relative mt-1 rounded-md shadow-sm">
+                    <input
+                      type="text"
+                      name="abbreviation"
+                      id="abbreviation"
+                      className={classNames(inputClasses, "w-full", {
+                        "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500":
+                          fetcher.data?.errors?.abbreviation,
+                      })}
+                      aria-describedby="abbreviation-error"
+                    />
+                    {fetcher.data?.errors?.abbreviation && (
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <ExclamationCircleIcon
+                          className="w-5 h-5 text-red-500"
+                          aria-hidden="true"
+                        />
+                      </div>
+                    )}
+                  </div>
                   {fetcher.data?.errors?.abbreviation && (
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <ExclamationCircleIcon
-                        className="w-5 h-5 text-red-500"
-                        aria-hidden="true"
-                      />
-                    </div>
+                    <p
+                      className="mt-2 text-sm text-red-600"
+                      id="abbreviation-error"
+                    >
+                      {fetcher.data?.errors?.abbreviation}
+                    </p>
                   )}
                 </div>
-                {fetcher.data?.errors?.abbreviation && (
-                  <p
-                    className="mt-2 text-sm text-red-600"
-                    id="abbreviation-error"
-                  >
-                    {fetcher.data?.errors?.abbreviation}
-                  </p>
-                )}
-              </div>
 
-              <div className="mt-4">
-                <label
-                  htmlFor="abbreviation"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Conference
-                </label>
-                <div className="relative mt-1 rounded-md shadow-sm">
-                  <select
-                    id="conference"
-                    name="conference"
-                    className={selectClasses}
+                <div className="mt-4">
+                  <label
+                    htmlFor="abbreviation"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    <option value="">select</option>
-                    <option value="AFC">AFC</option>
-                    <option value="NFC">NFC</option>
-                  </select>
+                    Conference
+                  </label>
+                  <div className="relative mt-1 rounded-md shadow-sm">
+                    <select
+                      id="conference"
+                      name="conference"
+                      className={selectClasses}
+                    >
+                      <option value="">select</option>
+                      <option value="AFC">AFC</option>
+                      <option value="NFC">NFC</option>
+                    </select>
+                    {fetcher.data?.errors?.conference && (
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <ExclamationCircleIcon
+                          className="w-5 h-5 text-red-500"
+                          aria-hidden="true"
+                        />
+                      </div>
+                    )}
+                  </div>
                   {fetcher.data?.errors?.conference && (
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <ExclamationCircleIcon
-                        className="w-5 h-5 text-red-500"
-                        aria-hidden="true"
-                      />
-                    </div>
+                    <p
+                      className="mt-2 text-sm text-red-600"
+                      id="conference-error"
+                    >
+                      {fetcher.data?.errors?.conference}
+                    </p>
                   )}
                 </div>
-                {fetcher.data?.errors?.conference && (
-                  <p
-                    className="mt-2 text-sm text-red-600"
-                    id="conference-error"
-                  >
-                    {fetcher.data?.errors?.conference}
-                  </p>
-                )}
-              </div>
 
-              <div className="mt-4 text-right">
-                <button
-                  type="submit"
-                  name="intent"
-                  value="add-team"
-                  className={buttonClasses}
-                >
-                  Create
-                </button>
+                <div className="mt-4 text-right">
+                  <button
+                    type="submit"
+                    name="intent"
+                    value="add-team"
+                    className={buttonClasses}
+                  >
+                    Create
+                  </button>
+                </div>
               </div>
             </div>
           </div>
