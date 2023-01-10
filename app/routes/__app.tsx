@@ -1,6 +1,6 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon, Bars3Icon, UserIcon } from "@heroicons/react/24/solid";
-import { Form, Outlet, useLoaderData } from "@remix-run/react";
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import { json, LoaderArgs } from "@remix-run/server-runtime";
 import classNames from "classnames";
 import { Fragment } from "react";
@@ -27,9 +27,9 @@ export default function AppPage() {
             <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
               <div className="relative flex items-center justify-between h-16">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 font-bold text-white">
+                  <Link to="/" className="flex-shrink-0 font-bold text-white">
                     NFL Pickems
-                  </div>
+                  </Link>
                 </div>
 
                 <div className="flex lg:hidden">
