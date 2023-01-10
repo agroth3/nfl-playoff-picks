@@ -40,9 +40,6 @@ export async function action({ request }: ActionArgs) {
   const hash = formData.get("hash");
   const password = formData.get("password");
 
-  console.log("LEAGUE ID ", hash);
-  console.log("PASSWORD ", password);
-
   if (typeof hash !== "string" || hash.length === 0) {
     return json(
       { errors: { hash: "League ID is required", password: null } },
@@ -95,8 +92,8 @@ export default function JoinLeaguePage() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-      <Form method="post" className="mx-auto mt-4 max-w-lg">
+    <main className="w-full px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <Form method="post" className="max-w-lg mx-auto mt-4">
         <h3 className="text-lg font-medium leading-6 text-gray-900">
           {data?.league
             ? `Enter password for ${data.league.name}`
@@ -127,9 +124,9 @@ export default function JoinLeaguePage() {
                 aria-describedby="id-error"
               />
               {actionData?.errors?.hash && (
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <ExclamationCircleIcon
-                    className="h-5 w-5 text-red-500"
+                    className="w-5 h-5 text-red-500"
                     aria-hidden="true"
                   />
                 </div>
@@ -164,9 +161,9 @@ export default function JoinLeaguePage() {
               aria-describedby="password-error"
             />
             {actionData?.errors?.password && (
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <ExclamationCircleIcon
-                  className="h-5 w-5 text-red-500"
+                  className="w-5 h-5 text-red-500"
                   aria-hidden="true"
                 />
               </div>
@@ -185,7 +182,7 @@ export default function JoinLeaguePage() {
         <div className="mt-4 text-right">
           <button
             type="submit"
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:bg-blue-400"
           >
             Save
           </button>
