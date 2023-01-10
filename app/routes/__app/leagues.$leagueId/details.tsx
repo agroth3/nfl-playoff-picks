@@ -15,29 +15,76 @@ export const handle = {
   breadcrumb: () => "Leaderboard",
 };
 
+interface ScoreboardModel {
+  name: string;
+  points: number;
+}
+
 export const loader = async ({ request, params }: LoaderArgs) => {
   const userId = await requireUserId(request);
   const leagueId = Number(params.leagueId);
   invariant(params.leagueId, "leagueId not found");
 
+  const teams = await (
+    await getTeams({ leagueId })
+  ).sort((a, b) => (a.rank < b.rank ? -1 : 1));
   const memberPicks = await getLeagueMemberPicks({ leagueId });
 
-  const picks = memberPicks.reduce((prev, curr) => {
-    if (prev[curr.user.firstName]) {
-      prev[curr.user.firstName] = [
-        ...prev[curr.user.firstName],
-        { team: curr.team, points: curr.points },
+  const memberPicksWithPoints = memberPicks.reduce((prev, curr) => {
+    const name = `${curr.user.firstName} ${curr.user.lastName}`;
+    if (prev[curr.user.id]) {
+      prev[curr.user.id] = [
+        ...prev[curr.user.id],
+        { name, team: curr.team, points: curr.points },
       ];
     } else {
-      prev[curr.user.firstName] = [{ team: curr.team, points: curr.points }];
+      prev[curr.user.id] = [{ name, team: curr.team, points: curr.points }];
     }
 
     return prev;
-  }, {} as Record<string, { team: Team; points: number }[]>);
+  }, {} as Record<string, { name: string; team: Team; points: number }[]>);
 
-  const myPicks = memberPicks.filter((mp) => mp.user.id === userId);
+  let rows = [["entry name", ...teams.map((team) => team.abbreviation)]];
 
-  return json({ picks, myPicks });
+  Object.entries(memberPicksWithPoints).forEach(([key, picks]) => {
+    const name = picks[0].name;
+
+    let columns = [];
+    columns.push(name);
+
+    teams.forEach((team) => {
+      const currentUserPickedTeam = picks.find((p) => p.team.id === team.id);
+      const points = currentUserPickedTeam?.points ?? 0;
+
+      columns.push(points);
+    });
+
+    rows.push(columns);
+  });
+
+  const scoreboardObject = memberPicks.reduce((prev, curr) => {
+    const currentTeamWins = curr.team.wins;
+    const name = `${curr.user.firstName} ${curr.user.lastName}`;
+
+    if (prev[name]) {
+      prev[name] = prev[name] += currentTeamWins * curr.points;
+    } else {
+      prev[name] = currentTeamWins * curr.points;
+    }
+
+    return prev;
+  }, {} as Record<string, number>);
+  const scoreboardArray = Object.entries(scoreboardObject).map(
+    ([name, points]) => {
+      return { name, points } as ScoreboardModel;
+    }
+  );
+
+  const rankedScoreboard = scoreboardArray.sort((a, b) =>
+    a.points < b.points ? 1 : -1
+  );
+
+  return json({ rows, scoreboard: rankedScoreboard, userId, teams });
 };
 
 export default function LeagueDetailsPage() {
@@ -46,7 +93,7 @@ export default function LeagueDetailsPage() {
     league: League;
   };
 
-  const headerRowData = Object.values(data.picks)[0];
+  const [headerRowData, ...rest] = data.rows;
 
   return (
     <div>
@@ -69,65 +116,129 @@ export default function LeagueDetailsPage() {
         </div>
       )}
       {league.isLocked && (
-        <div className="grid grid-cols-12 gap-4">
-          <div className={classNames("col-span-8")}>
-            <div className={cardClasses}>
-              <div className="p-6">
-                <h2 className="text-lg font-medium leading-6 text-navy">
-                  Leaderboard
-                </h2>
+        <div>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-8">
+              <div className={cardClasses}>
+                <div className="p-6">
+                  <h2 className="text-lg font-medium leading-6 text-navy">
+                    Leaderboard
+                  </h2>
+                </div>
+                <div className="p-6 border-t border-gray-200">
+                  <div className="flex flex-col mt-8">
+                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                      <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                        <table className="min-w-full divide-y divide-gray-300">
+                          <thead>
+                            <tr>
+                              <th
+                                scope="col"
+                                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                              >
+                                Rank
+                              </th>
+                              <th
+                                scope="col"
+                                className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                              >
+                                Name
+                              </th>
+                              <th
+                                scope="col"
+                                className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                              >
+                                Points
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {data.scoreboard.map((sb, index) => (
+                              <tr key={sb.name}>
+                                <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-6 md:pl-0">
+                                  {index + 1}
+                                </td>
+                                <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                  {sb.name}
+                                </td>
+                                <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                  {sb.points}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="p-6 border-t border-gray-200">
-                <table>
-                  <thead>
-                    <tr>
-                      <th className="w-20 p-2 text-left"></th>
-                      {headerRowData.map((t) => (
-                        <th key={t.team.id} className="w-12 p-2 text-left">
-                          {t.team.abbreviation}
-                        </th>
+            </div>
+            <div className={classNames("col-span-4")}>
+              <div className={classNames(cardClasses)}>
+                <div className="p-6">
+                  <h2 className="flex justify-between text-lg font-medium leading-6 text-navy">
+                    Team wins
+                  </h2>
+                </div>
+                <div className="p-6 border-t border-gray-200">
+                  <ul className="">
+                    {data.teams
+                      .sort((a, b) => (a.wins < b.wins ? 1 : -1))
+                      .map((t) => (
+                        <li key={t.id} className="flex justify-between py-2">
+                          <span className="font-medium">{t.abbreviation}</span>
+                          <span>{t.wins}</span>
+                        </li>
                       ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(data.picks).map(([key, value]) => (
-                      <tr key={key}>
-                        <td className="w-20 p-2">{key}</td>
-                        {value.map((p) => (
-                          <td key={p.team.id} className="w-12 p-2">
-                            {p.points}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-          <div className={classNames("col-span-4")}>
-            <div className={classNames(cardClasses)}>
+          <div className="mt-8">
+            <div className={cardClasses}>
               <div className="p-6">
-                <h2 className="flex justify-between text-lg font-medium leading-6 text-navy">
-                  Your picks
-                  <Link to="../entries" className="text-sm hover:underline">
-                    view
-                  </Link>
+                <h2 className="text-lg font-medium leading-6 text-navy">
+                  Member picks
                 </h2>
               </div>
               <div className="p-6 border-t border-gray-200">
-                <ul className="">
-                  {data.myPicks
-                    .sort((a, b) => (a.points < b.points ? 1 : -1))
-                    .map((p) => (
-                      <li key={p.team.id} className="flex justify-between py-2">
-                        <span className="font-medium">
-                          {p.team.abbreviation}
-                        </span>
-                        <span>{p.points}</span>
-                      </li>
-                    ))}
-                </ul>
+                <div className="flex flex-col mt-8">
+                  <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                      <table className="min-w-full divide-y divide-gray-300">
+                        <thead>
+                          <tr>
+                            {headerRowData.map((value) => (
+                              <th
+                                key={value}
+                                scope="col"
+                                className="py-3.5 pl-3 pr-3 text-left text-sm font-semibold text-gray-900"
+                              >
+                                {value}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {rest.map((value) => (
+                            <tr key={value[0]}>
+                              {value.map((p) => (
+                                <td
+                                  key={p}
+                                  className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap"
+                                >
+                                  {p}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
