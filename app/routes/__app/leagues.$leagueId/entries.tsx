@@ -1,5 +1,10 @@
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useTransition,
+} from "@remix-run/react";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/server-runtime";
 import classNames from "classnames";
 import invariant from "tiny-invariant";
@@ -85,6 +90,8 @@ export default function LeagueEntriesPage() {
   const { league } = useMatchesData("routes/__app/leagues.$leagueId") as {
     league: League;
   };
+  const transition = useTransition();
+  const isSubmitting = transition.state === "submitting";
 
   return (
     <div>
@@ -142,13 +149,14 @@ export default function LeagueEntriesPage() {
                         defaultValue={myPick?.points.toString() ?? ""}
                       >
                         <option value="">Select</option>
-                        {Array.from(new Array(data.teams.length)).map(
-                          (i, index) => (
-                            <option key={index} value={index + 1}>
-                              {index + 1}
+                        {Array.from(new Array(data.teams.length))
+                          .map((_, i) => i + 1)
+                          .reverse()
+                          .map((val) => (
+                            <option key={val} value={val}>
+                              {val}
                             </option>
-                          )
-                        )}
+                          ))}
                       </select>
                     </div>
                     {pickError && (
@@ -165,8 +173,9 @@ export default function LeagueEntriesPage() {
                 name="intent"
                 value="update-picks"
                 className={buttonClasses}
+                disabled={isSubmitting}
               >
-                Save
+                {isSubmitting ? "Saving" : "Save"}
               </button>
             </div>
           </fieldset>
