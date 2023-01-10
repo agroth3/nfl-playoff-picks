@@ -127,6 +127,7 @@ export default function Join() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData<typeof action>();
+  const [firstName, setFirstName] = React.useState("");
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
@@ -151,7 +152,6 @@ export default function Join() {
             </label>
             <div className="mt-1">
               <input
-                ref={emailRef}
                 id="firstName"
                 required
                 autoFocus={true}
@@ -161,7 +161,14 @@ export default function Join() {
                 aria-invalid={actionData?.errors?.firstName ? true : undefined}
                 aria-describedby="firstName-error"
                 className="w-full px-2 py-1 text-lg border border-gray-500 rounded"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
               />
+              {firstName.trim().toLowerCase().includes("drew") && (
+                <p className="mt-2 text-sm text-gray-500">
+                  Ya you love the 8====D
+                </p>
+              )}
               {actionData?.errors?.firstName && (
                 <div className="pt-1 text-red-700" id="firstName-error">
                   {actionData.errors.firstName}
@@ -179,7 +186,6 @@ export default function Join() {
             </label>
             <div className="mt-1">
               <input
-                ref={emailRef}
                 id="lastName"
                 required
                 name="lastName"
