@@ -82,6 +82,8 @@ model Team {
   conference   String
   wins         Int
 
+  imageUri String @default("")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

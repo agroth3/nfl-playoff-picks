@@ -130,7 +130,10 @@ export default function LeagueEntriesPage() {
                   <li key={team.id} className="py-2">
                     <input type="hidden" name="teamId" value={team.id} />
                     <div className="flex items-center justify-between">
-                      <span>{team.name}</span>
+                      <div className="flex items-center gap-2">
+                        <img className="w-10 h-10" src={team.imageUri} />
+                        <span>{team.name}</span>
+                      </div>
                       <select
                         className={classNames(selectClasses, "w-auto", {
                           "border-red-400": pickError,

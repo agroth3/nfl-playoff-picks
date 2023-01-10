@@ -1,10 +1,5 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import {
-  XMarkIcon,
-  Bars3Icon,
-  BellIcon,
-  UserIcon,
-} from "@heroicons/react/24/solid";
+import { XMarkIcon, Bars3Icon, UserIcon } from "@heroicons/react/24/solid";
 import { Form, Outlet, useLoaderData } from "@remix-run/react";
 import { json, LoaderArgs } from "@remix-run/server-runtime";
 import classNames from "classnames";

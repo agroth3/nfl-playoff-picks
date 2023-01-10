@@ -44,7 +44,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     return prev;
   }, {} as Record<string, { name: string; team: Team; points: number }[]>);
 
-  let rows = [["entry name", ...teams.map((team) => team.abbreviation)]];
+  let rows = [["entry name", ...teams.map((team) => team.imageUri)]];
 
   Object.entries(memberPicksWithPoints).forEach(([key, picks]) => {
     const name = picks[0].name;
@@ -216,7 +216,11 @@ export default function LeagueDetailsPage() {
                                 scope="col"
                                 className="py-3.5 pl-3 pr-3 text-left text-sm font-semibold text-gray-900"
                               >
-                                {value}
+                                {value !== "entry name" ? (
+                                  <img src={value} className="w-10 h-10" />
+                                ) : (
+                                  value
+                                )}
                               </th>
                             ))}
                           </tr>
@@ -227,7 +231,7 @@ export default function LeagueDetailsPage() {
                               {value.map((p) => (
                                 <td
                                   key={p}
-                                  className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap"
+                                  className="px-3 py-4 text-sm text-center text-gray-500 whitespace-nowrap"
                                 >
                                   {p}
                                 </td>

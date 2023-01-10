@@ -1,4 +1,4 @@
-import type { League, Pick, Team, User } from "@prisma/client";
+import type { League, Pick, User } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 

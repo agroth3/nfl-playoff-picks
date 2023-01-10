@@ -25,8 +25,7 @@ export const handle = {
   breadcrumb: () => "Admin",
 };
 
-export const loader = async ({ request, params }: LoaderArgs) => {
-  const userId = await requireUserId(request);
+export const loader = async ({ params }: LoaderArgs) => {
   invariant(params.leagueId, "leagueId not found");
 
   const teams = await getTeams({ leagueId: Number(params.leagueId) });
@@ -35,7 +34,6 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 };
 
 export const action = async ({ request, params }: ActionArgs) => {
-  const userId = await requireUserId(request);
   invariant(params.leagueId, "leagueId not found");
 
   const formData = await request.formData();
@@ -46,6 +44,7 @@ export const action = async ({ request, params }: ActionArgs) => {
       const name = formData.get("name");
       const abbreviation = formData.get("abbreviation");
       const conference = formData.get("conference");
+      const imageUri = formData.get("new-imageUri") as string;
 
       if (typeof name !== "string" || name.length === 0) {
         return json(
@@ -89,6 +88,7 @@ export const action = async ({ request, params }: ActionArgs) => {
         name,
         abbreviation,
         conference,
+        imageUri: imageUri,
       });
 
       return new Response("ok");
@@ -112,6 +112,7 @@ export const action = async ({ request, params }: ActionArgs) => {
         const wins = formData.getAll("wins");
         const names = formData.getAll("teamName");
         const abbreviations = formData.getAll("teamAbbreviation");
+        const imageUris = formData.getAll("imageUri");
 
         for (let i = 0; i < teamIds.length; i++) {
           const teamId = teamIds[i];
@@ -119,6 +120,9 @@ export const action = async ({ request, params }: ActionArgs) => {
           const teamWins = wins[i];
           const name = names[i] as string;
           const abbreviation = abbreviations[i] as string;
+          const imageUri = imageUris[i] as string;
+
+          console.log(imageUri);
 
           await updateTeam({
             id: Number(teamId),
@@ -126,6 +130,7 @@ export const action = async ({ request, params }: ActionArgs) => {
             wins: Number(teamWins),
             name,
             abbreviation,
+            imageUri,
           });
         }
 
@@ -273,6 +278,7 @@ export default function LeagueAdminPage() {
                     </p>
                   )}
                 </div>
+
                 <div className="mt-4">
                   <label
                     htmlFor="abbreviation"
@@ -308,6 +314,23 @@ export default function LeagueAdminPage() {
                       {fetcher.data?.errors?.abbreviation}
                     </p>
                   )}
+                </div>
+
+                <div className="mt-4">
+                  <label
+                    htmlFor="imageUri"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Logo
+                  </label>
+                  <div className="relative mt-1 rounded-md shadow-sm">
+                    <input
+                      type="text"
+                      name="new-imageUri"
+                      id="imageUri"
+                      className={classNames(inputClasses, "w-full")}
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-4">
@@ -437,7 +460,7 @@ const TeamListItem = ({
   totalTeamsCount: number;
   team: Pick<
     Team,
-    "name" | "abbreviation" | "conference" | "id" | "rank" | "wins"
+    "name" | "abbreviation" | "conference" | "id" | "rank" | "wins" | "imageUri"
   >;
 }) => {
   return (
@@ -500,6 +523,23 @@ const TeamListItem = ({
             id={`team[${team.id}][wins]`}
             className={inputClasses}
             defaultValue={team.wins}
+          />
+        </div>
+      </div>
+      <div className="mt-2">
+        <label
+          htmlFor={`team[${team.id}].imageUri`}
+          className="block text-sm font-medium text-gray-700"
+        >
+          Logo
+        </label>
+        <div className="mt-1">
+          <input
+            type="text"
+            name="imageUri"
+            id={`team[${team.id}].imageUri`}
+            className={inputClasses}
+            defaultValue={team.imageUri ?? ""}
           />
         </div>
       </div>

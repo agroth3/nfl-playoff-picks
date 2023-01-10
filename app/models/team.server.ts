@@ -13,6 +13,7 @@ export async function getTeams({ leagueId }: { leagueId: League["id"] }) {
       conference: true,
       rank: true,
       wins: true,
+      imageUri: true,
     },
     where: {
       leagueId,
@@ -26,15 +27,17 @@ export async function createTeam({
   name,
   abbreviation,
   conference,
+  imageUri,
 }: { leagueId: League["id"] } & Pick<
   Team,
-  "name" | "abbreviation" | "conference"
+  "name" | "abbreviation" | "conference" | "imageUri"
 >) {
   return prisma.team.create({
     data: {
       name,
       abbreviation,
       conference,
+      imageUri,
       league: { connect: { id: leagueId } },
       wins: 0,
       rank: 0,
@@ -56,13 +59,16 @@ export async function updateTeam({
   wins,
   name,
   abbreviation,
-}: Pick<Team, "id" | "rank" | "wins" | "name" | "abbreviation">) {
+  imageUri,
+}: Pick<Team, "id" | "rank" | "wins" | "name" | "abbreviation" | "imageUri">) {
+  console.log("UPDATE TEAM ", name, imageUri);
   return prisma.team.update({
     data: {
       rank,
       wins,
       name,
       abbreviation,
+      imageUri,
     },
     where: { id },
   });
