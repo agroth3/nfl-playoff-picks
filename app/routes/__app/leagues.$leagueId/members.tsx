@@ -12,6 +12,7 @@ import { ActionArgs, json, LoaderArgs } from "@remix-run/server-runtime";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { cardClasses } from "~/components/Inputs";
 import { getLeagueMembers } from "~/models/league.server";
+import { getLeagueMemberPicks } from "~/models/pick.server";
 import { requireUserId } from "~/session.server";
 import { useMatchesData } from "~/utils";
 
@@ -24,6 +25,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const leagueId = Number(params.leagueId);
 
   const leagueMembers = await getLeagueMembers({ id: leagueId });
+  const leagueMemberPicks = await getLeagueMemberPicks({ leagueId });
 
   return json({
     userId,
@@ -32,6 +34,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
       createdAt: lm.user.createdAt.toLocaleDateString(),
       updatedAt: lm.user.updatedAt.toDateString(),
     })),
+    leagueMemberPicks,
   });
 };
 
@@ -71,6 +74,12 @@ export default function LeagueMembersPage() {
                       scope="col"
                       className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                     >
+                      Has Picks?
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                    >
                       Date joined
                     </th>
                   </tr>
@@ -78,6 +87,9 @@ export default function LeagueMembersPage() {
                 <tbody className="divide-y divide-gray-200">
                   {data.leagueMembers.map((m) => (
                     <MemberListItem
+                      hasPicks={data.leagueMemberPicks.some(
+                        (lmp) => lmp.user.id === m.id
+                      )}
                       isAdmin={league.userId === data.userId}
                       member={m}
                       key={m.id}
@@ -95,9 +107,11 @@ export default function LeagueMembersPage() {
 }
 
 function MemberListItem({
+  hasPicks,
   isAdmin,
   member,
 }: {
+  hasPicks: boolean;
   isAdmin: boolean;
   member: {
     createdAt: string;
@@ -116,6 +130,9 @@ function MemberListItem({
         </td>
         <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
           {member.lastName}
+        </td>
+        <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+          {hasPicks ? "Yes" : "No"}
         </td>
         <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
           {member.createdAt}

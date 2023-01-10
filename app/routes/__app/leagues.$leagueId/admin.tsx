@@ -467,18 +467,6 @@ const TeamListItem = ({
     <li className="py-4">
       <input type="hidden" name="teamId" value={team.id} />
       <div className="flex items-center justify-between gap-2">
-        <select
-          name="rank"
-          id={`team[${team.id}][rank]`}
-          defaultValue={team.rank.toString()}
-          className={selectClasses}
-        >
-          {Array.from(new Array(totalTeamsCount)).map((i, index) => (
-            <option key={index} value={index + 1}>
-              {index + 1}
-            </option>
-          ))}
-        </select>
         <input
           className={inputClasses}
           type="text"
@@ -497,6 +485,28 @@ const TeamListItem = ({
           htmlFor={`team[${team.id}].abbr`}
           className="block text-sm font-medium text-gray-700"
         >
+          Rank
+        </label>
+        <div className="mt-1">
+          <select
+            name="rank"
+            id={`team[${team.id}][rank]`}
+            defaultValue={team.rank.toString()}
+            className={selectClasses}
+          >
+            {Array.from(new Array(totalTeamsCount)).map((i, index) => (
+              <option key={index} value={index + 1}>
+                {index + 1}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="mt-2">
+        <label
+          htmlFor={`team[${team.id}].abbr`}
+          className="block text-sm font-medium text-gray-700"
+        >
           Abbreviation
         </label>
         <div className="mt-1">
@@ -504,7 +514,7 @@ const TeamListItem = ({
             type="text"
             name="teamAbbreviation"
             id={`team[${team.id}].abbr`}
-            className={inputClasses}
+            className={classNames(inputClasses, "w-full")}
             defaultValue={team.abbreviation}
           />
         </div>
@@ -521,7 +531,7 @@ const TeamListItem = ({
             type="number"
             name="wins"
             id={`team[${team.id}][wins]`}
-            className={inputClasses}
+            className={classNames(inputClasses, "w-full")}
             defaultValue={team.wins}
           />
         </div>
@@ -538,7 +548,7 @@ const TeamListItem = ({
             type="text"
             name="imageUri"
             id={`team[${team.id}].imageUri`}
-            className={inputClasses}
+            className={classNames(inputClasses, "w-full")}
             defaultValue={team.imageUri ?? ""}
           />
         </div>

@@ -1,12 +1,18 @@
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import {
+  CheckCircleIcon,
+  HandThumbUpIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/solid";
 import {
   Form,
+  Link,
   useActionData,
   useLoaderData,
   useTransition,
 } from "@remix-run/react";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/server-runtime";
 import classNames from "classnames";
+import { useEffect, useState } from "react";
 import invariant from "tiny-invariant";
 import { buttonClasses, cardClasses, selectClasses } from "~/components/Inputs";
 import { League } from "~/models/league.server";
@@ -85,6 +91,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 };
 
 export default function LeagueEntriesPage() {
+  const [showSuccess, setShowSuccess] = useState(false);
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const { league } = useMatchesData("routes/__app/leagues.$leagueId") as {
@@ -92,6 +99,21 @@ export default function LeagueEntriesPage() {
   };
   const transition = useTransition();
   const isSubmitting = transition.state === "submitting";
+
+  useEffect(() => {
+    if (actionData === "ok") {
+      setShowSuccess(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      setShowSuccess(false);
+    }
+  }, [actionData]);
+
+  useEffect(() => {
+    if (transition.state === "submitting") {
+      setShowSuccess(false);
+    }
+  }, [transition.state]);
 
   return (
     <div>
@@ -108,6 +130,41 @@ export default function LeagueEntriesPage() {
               <p className="text-sm text-blue-700">
                 You are not able to make picks once league is locked.
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {showSuccess && (
+        <div className="p-4 mb-4 rounded-md bg-green-50">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <CheckCircleIcon
+                className="w-5 h-5 text-green-400"
+                aria-hidden="true"
+              />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-green-800">
+                Picks Saved
+              </h3>
+              <div className="mt-2 text-sm text-green-700">
+                <p>
+                  Your picks have been saved. Once the league is locked they
+                  will be visible for everyone.
+                </p>
+              </div>
+              <div className="mt-4">
+                <div className="-mx-2 -my-1.5 flex">
+                  <Link to="../details">
+                    <button
+                      type="button"
+                      className="rounded-md bg-green-50 px-2 py-1.5 text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+                    >
+                      View leaderboard
+                    </button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -98,7 +98,7 @@ export default function LeagueDetailsPage() {
   return (
     <div>
       {league?.isLocked === false && (
-        <div className="p-4 rounded-md bg-blue-50">
+        <div className="p-4 mb-4 rounded-md bg-blue-50">
           <div className="flex">
             <div className="flex-shrink-0">
               <InformationCircleIcon
@@ -108,139 +108,137 @@ export default function LeagueDetailsPage() {
             </div>
             <div className="flex-1 ml-3 md:flex md:justify-between">
               <p className="text-sm text-blue-700">
-                Leaderboard will be available once all picks are in and league
-                is locked.
+                Member picks will be visible once all picks are in and league is
+                locked.
               </p>
             </div>
           </div>
         </div>
       )}
-      {league.isLocked && (
-        <div>
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-8">
-              <div className={cardClasses}>
-                <div className="p-6">
-                  <h2 className="text-lg font-medium leading-6 text-navy">
-                    Leaderboard
-                  </h2>
-                </div>
-                <div className="p-6 border-t border-gray-200">
-                  <div className="flex flex-col mt-8">
-                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                      <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                        <table className="min-w-full divide-y divide-gray-300">
-                          <thead>
-                            <tr>
-                              <th
-                                scope="col"
-                                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
-                              >
-                                Rank
-                              </th>
-                              <th
-                                scope="col"
-                                className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                              >
-                                Name
-                              </th>
-                              <th
-                                scope="col"
-                                className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                              >
-                                Points
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-200">
-                            {data.scoreboard.map((sb, index) => (
-                              <tr key={sb.name}>
-                                <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-6 md:pl-0">
-                                  {index + 1}
-                                </td>
-                                <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                  {sb.name}
-                                </td>
-                                <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                  {sb.points}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 md:col-span-8">
+          <div className={cardClasses}>
+            <div className="p-6">
+              <h2 className="text-lg font-medium leading-6 text-navy">
+                Leaderboard
+              </h2>
+            </div>
+            <div className="p-6 border-t border-gray-200">
+              <div className="flex flex-col">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                    <table className="min-w-full divide-y divide-gray-300">
+                      <thead>
+                        <tr>
+                          <th
+                            scope="col"
+                            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                          >
+                            Rank
+                          </th>
+                          <th
+                            scope="col"
+                            className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                          >
+                            Name
+                          </th>
+                          <th
+                            scope="col"
+                            className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                          >
+                            Points
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {data.scoreboard.map((sb, index) => (
+                          <tr key={sb.name}>
+                            <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-6 md:pl-0">
+                              {index + 1}
+                            </td>
+                            <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                              {sb.name}
+                            </td>
+                            <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                              {sb.points}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
             </div>
-            <div className={classNames("col-span-4")}>
-              <div className={classNames(cardClasses)}>
-                <div className="p-6">
-                  <h2 className="flex justify-between text-lg font-medium leading-6 text-navy">
-                    Team wins
-                  </h2>
-                </div>
-                <div className="p-6 border-t border-gray-200">
-                  <ul className="">
-                    {data.teams
-                      .sort((a, b) => (a.wins < b.wins ? 1 : -1))
-                      .map((t) => (
-                        <li key={t.id} className="flex justify-between py-2">
-                          <span className="font-medium">{t.abbreviation}</span>
-                          <span>{t.wins}</span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              </div>
+          </div>
+        </div>
+        <div className={classNames("col-span-12 md:col-span-4")}>
+          <div className={classNames(cardClasses)}>
+            <div className="p-6">
+              <h2 className="flex justify-between text-lg font-medium leading-6 text-navy">
+                Team wins
+              </h2>
+            </div>
+            <div className="p-6 border-t border-gray-200">
+              <ul className="">
+                {data.teams
+                  .sort((a, b) => (a.wins < b.wins ? 1 : -1))
+                  .map((t) => (
+                    <li key={t.id} className="flex justify-between py-2">
+                      <span className="font-medium">{t.abbreviation}</span>
+                      <span>{t.wins}</span>
+                    </li>
+                  ))}
+              </ul>
             </div>
           </div>
-          <div className="mt-8">
-            <div className={cardClasses}>
-              <div className="p-6">
-                <h2 className="text-lg font-medium leading-6 text-navy">
-                  Member picks
-                </h2>
-              </div>
-              <div className="p-6 border-t border-gray-200">
-                <div className="flex flex-col mt-8">
-                  <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                      <table className="min-w-full divide-y divide-gray-300">
-                        <thead>
-                          <tr>
-                            {headerRowData.map((value) => (
-                              <th
-                                key={value}
-                                scope="col"
-                                className="py-3.5 pl-3 pr-3 text-left text-sm font-semibold text-gray-900"
+        </div>
+      </div>
+      {league.isLocked && (
+        <div className="mt-4">
+          <div className={cardClasses}>
+            <div className="p-6">
+              <h2 className="text-lg font-medium leading-6 text-navy">
+                Member picks
+              </h2>
+            </div>
+            <div className="p-6 border-t border-gray-200">
+              <div className="flex flex-col">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                    <table className="min-w-full divide-y divide-gray-300">
+                      <thead>
+                        <tr>
+                          {headerRowData.map((value) => (
+                            <th
+                              key={value}
+                              scope="col"
+                              className="min-w-[60px] py-3.5 pl-3 pr-3 text-left text-sm font-semibold text-gray-900"
+                            >
+                              {value !== "entry name" ? (
+                                <img src={value} className="w-10 h-10" />
+                              ) : (
+                                value
+                              )}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {rest.map((value) => (
+                          <tr key={value[0]}>
+                            {value.map((p) => (
+                              <td
+                                key={p}
+                                className="px-3 py-4 text-sm text-center text-gray-500 whitespace-nowrap"
                               >
-                                {value !== "entry name" ? (
-                                  <img src={value} className="w-10 h-10" />
-                                ) : (
-                                  value
-                                )}
-                              </th>
+                                {p}
+                              </td>
                             ))}
                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {rest.map((value) => (
-                            <tr key={value[0]}>
-                              {value.map((p) => (
-                                <td
-                                  key={p}
-                                  className="px-3 py-4 text-sm text-center text-gray-500 whitespace-nowrap"
-                                >
-                                  {p}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
