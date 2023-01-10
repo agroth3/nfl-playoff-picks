@@ -25,12 +25,6 @@ import {
 
 import { requireUserId } from "~/session.server";
 
-let tabs = [
-  { name: "Leaderboard", href: "details" },
-  { name: "Your Picks", href: "entries" },
-  { name: "Members", href: "members" },
-];
-
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request);
   invariant(params.leagueId, "leagueId not found");
@@ -42,7 +36,17 @@ export async function loader({ request, params }: LoaderArgs) {
     throw new Response("Not Found", { status: 404 });
   }
 
-  return json({ league, userId, baseUrl });
+  let tabs = [
+    { name: "Leaderboard", href: "details" },
+    { name: "Your Picks", href: "entries" },
+    { name: "Members", href: "members" },
+  ];
+
+  if (userId === league.userId) {
+    tabs = [...tabs, { name: "Admin", href: "admin" }];
+  }
+
+  return json({ league, userId, baseUrl, tabs });
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -163,10 +167,11 @@ export default function LeagueDetailsPage() {
                 className="block w-full py-2 pl-3 pr-10 mt-4 text-base border-gray-300 rounded-md focus:border-purple-500 focus:outline-none focus:ring-purple-500 sm:text-sm"
                 onChange={(e) => navigate(e.target.value)}
                 value={
-                  tabs.find((t) => location.pathname.includes(t.href))?.href
+                  data.tabs.find((t) => location.pathname.includes(t.href))
+                    ?.href
                 }
               >
-                {tabs.map((tab) => (
+                {data.tabs.map((tab) => (
                   <option key={tab.href} value={tab.href}>
                     {tab.name}
                   </option>
@@ -176,7 +181,7 @@ export default function LeagueDetailsPage() {
             <div className="hidden sm:block">
               <div className="border-b border-gray-200">
                 <nav className="flex mt-2 -mb-px space-x-8" aria-label="Tabs">
-                  {tabs.map((tab) => (
+                  {data.tabs.map((tab) => (
                     <NavLink
                       key={tab.name}
                       to={tab.href}
@@ -192,21 +197,6 @@ export default function LeagueDetailsPage() {
                       {tab.name}
                     </NavLink>
                   ))}
-                  {data.userId === data.league.userId && (
-                    <NavLink
-                      to="admin"
-                      className={({ isActive }) =>
-                        classNames(
-                          isActive
-                            ? "border-purple-500 text-purple-600"
-                            : "border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700",
-                          "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
-                        )
-                      }
-                    >
-                      Admin
-                    </NavLink>
-                  )}
                 </nav>
               </div>
             </div>
