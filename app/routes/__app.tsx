@@ -146,7 +146,7 @@ export default function AppPage() {
                   <Form action="/logout" method="post">
                     <button
                       type="submit"
-                      className="block px-3 py-2 text-base font-medium text-gray-900 rounded-md hover:bg-gray-100"
+                      className="block w-full px-3 py-2 text-base font-medium text-left text-gray-900 rounded-md hover:bg-gray-100"
                     >
                       Logout
                     </button>
